@@ -1,0 +1,3 @@
+pip==18.1
+setuptools==40.6
+-r requirements.txt
