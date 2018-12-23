@@ -64,30 +64,30 @@ def main(args=None):
                                                        MaxNumberOfMessages=10)
 
         if ("Messages" not in received_response) or (len(received_response['Messages']) == 0):
-            print(f"Queue did not returned messages")
+            print("Queue did not returned messages")
 
             number_of_empty_receives += 1
             sleep_time = random.randint(500, 2000) / 1000
 
-            print(f"Sleeping for {sleep_time} seconds")
+            print("Sleeping for {} seconds".format(sleep_time))
             sleep(sleep_time)
 
             continue
 
-        print(f"Received {len(received_response['Messages'])} messages")
+        print("Received {} messages".format(len(received_response['Messages'])))
 
         for message in received_response['Messages']:
-            print(f"Sending message to '{args.destination}'")
+            print("Sending message to '{}'".format(args.destination))
 
             send_response = sqs_client.send_message(QueueUrl=destination_queue_url,
                                                     MessageBody=message['Body'],
                                                     MessageAttributes=message['MessageAttributes'])
 
-            print(f"Deleting message from '{args.source}'")
+            print("Deleting message from '{}'".format(args.source))
             sqs_client.delete_message(QueueUrl=source_queue_url,
                                       ReceiptHandle=message['ReceiptHandle'])
 
-    print(f"Giving up after {number_of_empty_receives} empty receives from the source queue.")
+    print("Giving up after {} empty receives from the source queue.".format(number_of_empty_receives))
 
 
 if __name__ == "__main__":
