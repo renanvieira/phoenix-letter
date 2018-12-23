@@ -48,6 +48,7 @@ setup(
     include_package_data=True,
     description='CLI to move messages from a AWS SQS Queue to another',
     long_description=parse_readme(),
+    long_description_content_type="text/markdown",
     keywords=['AWS', 'SQS', 'Queue', 'DLQ', "Dead", "Letter", "Queue"],
     python_requires='>=2.7',
     zip_safe=False,
