@@ -29,11 +29,12 @@ def parse_readme():
 
 
 def parse_requirements_file(req):
-    with open(req, "r") as file:
+    with open(req) as file:
         lines = file.readlines()
         reqs = [item.split("==")[0] for item in lines]
         return [item for item in reqs if item.startswith("-") is False]
 
+parse_requirements_file("requirements/requirements.txt")
 
 setup(
     name='phoenix_letter',
@@ -66,7 +67,13 @@ setup(
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7'
     ],
-    install_requires=parse_requirements_file("requirements/requirements.txt"),
+    install_requires=[
+        "boto3"
+    ],
     test_suite='tests/phoenix_leter_tests',
-    tests_require=parse_requirements_file("requirements/test-requirements.txt"),
+    tests_require=[
+        "nose",
+        "moto",
+        "coverage"
+    ],
 )
