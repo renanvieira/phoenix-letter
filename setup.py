@@ -34,7 +34,7 @@ def parse_requirements_file(req):
         reqs = [item.split("==")[0] for item in lines]
         return [item for item in reqs if item.startswith("-") is False]
 
-parse_requirements_file("requirements/requirements.txt")
+print(os.getcwd())
 
 setup(
     name='phoenix_letter',
