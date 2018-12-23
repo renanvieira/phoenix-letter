@@ -1,11 +1,10 @@
-# Phoenix Letter
+# Phoenix Letter ![](coverage.svg)
 Lib to help moving messages from DLQ to main queue for reprocessing in AWS SQS. Can be used to move message to any other queue.
 
 
 ### TODO: 
-* add unit tests
 * add CI
-* add installation guide
+* add installation guidep
 
 
 ## Usage

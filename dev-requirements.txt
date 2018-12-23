@@ -1,3 +1,4 @@
 pip==18.1
 setuptools==40.6
--r requirements.txt
+coverage-badge
+-r test-requirements.txt

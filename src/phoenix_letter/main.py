@@ -6,7 +6,7 @@ from time import sleep
 import boto3
 
 
-def main(args=None):
+def parse_arguments(args):
     parser = ArgumentParser()
     parser.add_argument("--src", dest="source",
                         required=True,
@@ -37,7 +37,11 @@ def main(args=None):
                         help="Max number of empty receives before giving up",
                         metavar="EMPTY_RECEIVE")
 
-    args = parser.parse_args()
+    return parser.parse_args(args)
+
+
+def main(args=None):
+    args = parse_arguments(args)
 
     sqs_client = boto3.client("sqs", region_name=args.region,
                               aws_access_key_id=args.access_key,
@@ -53,7 +57,7 @@ def main(args=None):
 
     number_of_empty_receives = 0
 
-    while number_of_empty_receives <= args.max_empty_receives_count:
+    while number_of_empty_receives <= int(args.max_empty_receives_count):
         print("Receiving message...")
         received_response = sqs_client.receive_message(QueueUrl=source_queue_url, MessageAttributeNames=["All"],
                                                        AttributeNames=['All'],
@@ -87,4 +91,4 @@ def main(args=None):
 
 
 if __name__ == "__main__":
-    main(sys.argv)
+    main(sys.argv[1:])
