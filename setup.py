@@ -23,10 +23,16 @@ def find_version(*file_paths):
     raise RuntimeError("Unable to find version string.")
 
 
-def parse_requirements_file():
-    with open("requirements.txt", "r") as file:
+def parse_readme():
+    with open('README.md') as readme_file:
+        return readme_file.read()
+
+
+def parse_requirements_file(req):
+    with open(req, "r") as file:
         lines = file.readlines()
-        return [item.split("==")[0] for item in lines]
+        reqs = [item.split("==")[0] for item in lines]
+        return [item for item in reqs if item.startswith("-") is False]
 
 
 setup(
@@ -41,6 +47,7 @@ setup(
     py_modules=[splitext(basename(path))[0] for path in glob('src/*.py')],
     include_package_data=True,
     description='CLI to move messages from a AWS SQS Queue to another',
+    long_description=parse_readme,
     keywords=['AWS', 'SQS', 'Queue', 'DLQ', "Dead", "Letter", "Queue"],
     python_requires='>=2.7',
     zip_safe=False,
@@ -58,5 +65,7 @@ setup(
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7'
     ],
-    install_requires=parse_requirements_file()
+    install_requires=parse_requirements_file("requirements.txt"),
+    test_suite='tests/phoenix_leter_tests',
+    tests_require=parse_requirements_file("test-requirements.txt"),
 )

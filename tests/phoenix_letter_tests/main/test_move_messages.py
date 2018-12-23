@@ -10,7 +10,6 @@ from phoenix_letter_tests.bootstrap import BaseTestCase
 class MoveMessagesTestCase(BaseTestCase):
 
     def setUp(self):
-
         self.region = "us-east-1"
         self.access_key = "asdjaoisdj"
         self.secret_key = "ajshiuahfiauhduiahsd"
