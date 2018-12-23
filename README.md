@@ -1,6 +1,6 @@
 # Phoenix Letter [![Build Status](https://travis-ci.com/renanvieira/phoenix-letter.svg?branch=master)](https://travis-ci.com/renanvieira/phoenix-letter) ![](coverage.svg) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
  
-Command line script to help moving messages from DLQ back to the main queue for reprocessing in AWS SQS. Can be used to move messages to any other queue.
+Bring your messages back from [Dead Letter Queue](https://en.wikipedia.org/wiki/Dead_letter_queue) with this command line script that helps you moving messages from DLQ back to the main queue for reprocessing in [SQS](https://aws.amazon.com/sqs/?nc1=h_ls). It also can be used to move messages between queues in SQS.
 
 ## Usage
 
@@ -21,4 +21,4 @@ phoenix_letter: error: the following arguments are required: --src, --dst, --acc
 * `--empty-receive`: _[OPTIONAL]_[**default value=10**] Number of empty receives before the script gives up trying to get message from queue.*
 
 \* Sometimes the SQS returns false empty receives, where there is messages on queue but for some reason AWS decided not 
-return anything on that requests. To understand more [here a lnk from AWS docs](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-long-polling.html).
+return anything on that requests. To understand more [here a link from AWS docs](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-long-polling.html).
