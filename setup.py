@@ -66,7 +66,7 @@ setup(
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7'
     ],
-    install_requires=parse_requirements_file("requirements.txt"),
+    install_requires=parse_requirements_file("requirements/requirements.txt"),
     test_suite='tests/phoenix_leter_tests',
-    tests_require=parse_requirements_file("test-requirements.txt"),
+    tests_require=parse_requirements_file("requirements/test-requirements.txt"),
 )
