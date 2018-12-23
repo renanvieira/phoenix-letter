@@ -1,11 +1,6 @@
-# Phoenix Letter [![Build Status](https://travis-ci.com/renanvieira/phoenix-letter.svg?branch=master)](https://travis-ci.com/renanvieira/phoenix-letter) ![](coverage.svg) 
-Lib to help moving messages from DLQ to main queue for reprocessing in AWS SQS. Can be used to move message to any other queue.
-
-
-### TODO: 
-* add CI
-* add installation guidep
-
+# Phoenix Letter [![Build Status](https://travis-ci.com/renanvieira/phoenix-letter.svg?branch=master)](https://travis-ci.com/renanvieira/phoenix-letter) ![](coverage.svg) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+ 
+Command line script to help moving messages from DLQ back to the main queue for reprocessing in AWS SQS. Can be used to move messages to any other queue.
 
 ## Usage
 
