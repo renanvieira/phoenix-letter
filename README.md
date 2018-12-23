@@ -21,4 +21,4 @@ phoenix_letter: error: the following arguments are required: --src, --dst, --acc
 * `--empty-receive`: _[OPTIONAL]_[**default value=10**] Number of empty receives before the script gives up trying to get message from queue.*
 
 \* Sometimes the SQS returns false empty receives, where there is messages on queue but for some reason AWS decided not 
-return anything on that requests. To understand more [here a lnk from AWS docs](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-long-polling.html).
+return anything on that requests. To understand more [here a link from AWS docs](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-long-polling.html).
