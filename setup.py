@@ -34,7 +34,7 @@ setup(
     py_modules=[splitext(basename(path))[0] for path in glob('src/*.py')],
     include_package_data=True,
     description='Lib to move messages from AWS SQS Queue to another',
-    python_requires='>=3.5',
+    python_requires='>=2.7',
     zip_safe=False,
     entry_points={
         'console_scripts': ['phoenix_letter=phoenix_letter.main:main']
