@@ -34,6 +34,7 @@ def parse_requirements_file(req):
         reqs = [item.split("==")[0] for item in lines]
         return [item for item in reqs if item.startswith("-") is False]
 
+
 setup(
     name='phoenix_letter',
     version=find_version("src", "phoenix_letter", "version.py"),
@@ -63,7 +64,8 @@ setup(
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
-        'Programming Language :: Python :: 3.7'
+        'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8'
     ],
     install_requires=[
         "boto3"
