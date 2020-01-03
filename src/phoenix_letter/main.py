@@ -2,6 +2,7 @@ import random
 import sys
 from argparse import ArgumentParser
 from time import sleep
+from getpass import getpass
 
 import boto3
 
@@ -18,15 +19,8 @@ def parse_arguments(args):
                         help="Destination SQS Queue Name",
                         metavar="DESTINATION_QUEUE")
 
-    parser.add_argument("--access-key", dest="access_key",
-                        required=True,
-                        help="AWS Access Key",
-                        metavar="AWS_USER_ACCESS_KEY")
-
-    parser.add_argument("--secret-key", dest="secret_key",
-                        required=True,
-                        help="AWS Secret Key",
-                        metavar="AWS_USER_SECRET_KEY")
+    parser.add_argument("--aws-keys", dest="input_keys",
+                        help="Flag that indicates you want to enter custom AWS keys.", action='store_true')
 
     parser.add_argument("--region", dest="region", default="us-east-1",
                         required=True,
@@ -40,12 +34,24 @@ def parse_arguments(args):
     return parser.parse_args(args)
 
 
+def get_credentials():
+    access_key = getpass("AWS Access Key:")
+    secret_key = getpass("AWS Secret Key:")
+
+    return access_key, secret_key
+
+
 def main(args=None):
     args = parse_arguments(args)
 
+    if args.input_keys:
+        aws_access_key, aws_secret_key = get_credentials()
+    else:
+        aws_access_key, aws_secret_key = (None, None)
+
     sqs_client = boto3.client("sqs", region_name=args.region,
-                              aws_access_key_id=args.access_key,
-                              aws_secret_access_key=args.secret_key)
+                              aws_access_key_id=aws_access_key,
+                              aws_secret_access_key=aws_secret_key)
 
     print("Getting Queue URLs")
 

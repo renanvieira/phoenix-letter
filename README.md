@@ -1,22 +1,26 @@
 # Phoenix Letter ![](https://img.shields.io/pypi/pyversions/phoenix_letter.svg) [![Build Status](https://travis-ci.com/renanvieira/phoenix-letter.svg?branch=master)](https://travis-ci.com/renanvieira/phoenix-letter) ![](coverage.svg) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
  
-Bring your messages back from [Dead Letter Queue](https://en.wikipedia.org/wiki/Dead_letter_queue) with this command line script that helps you moving messages from DLQ back to the main queue for reprocessing in [SQS](https://aws.amazon.com/sqs/?nc1=h_ls). It also can be used to move messages between queues in SQS.
+Bring your messages back from [Dead Letter Queue](https://en.wikipedia.org/wiki/Dead_letter_queue) with this command line script that helps you moving messages from DLQ back to the main queue for reprocessing [SQS](https://aws.amazon.com/sqs/?nc1=h_ls) queues. It also can be used to move messages between queues in SQS.
 
 ## Usage
 
 After installation you will have a command with the following params:
 ```bash
-usage: phoenix_letter [-h] --src SOURCE_QUEUE --dst DESTINATION_QUEUE
-                      --access-key AWS_USER_ACCESS_KEY --secret-key
-                      AWS_USER_SECRET_KEY --region REGION
-                      [--empty-receive EMPTY_RECEIVE]
-phoenix_letter: error: the following arguments are required: --src, --dst, --access-key, --secret-key, --region
+$  phoenix_letter --help
+usage: main.py [-h] --src SOURCE_QUEUE --dst DESTINATION_QUEUE [--aws-keys]
+               --region REGION [--empty-receive EMPTY_RECEIVE]
+
+optional arguments:
+  -h, --help               show this help message and exit
+  --src SOURCE_QUEUE       Source SQS Queue Name
+  --dst DESTINATION_QUEUE  Destination SQS Queue Name
+  --aws-keys               Flag that indicates you want to enter custom AWS keys.
+  --region REGION          AWS Region
 ```
 
 * `--src`: Source Queue Name
 * `--dst`: Destination Queue Name
-* `--access-key`: AWS Access Key, make sure that the account used here has access to both queues.
-* `--secret-key`: AWS Secret Key, make sure that the account used here has access to both queues.
+* `--aws-keys`: _[OPTIONAL]_ The CLI will prompt you to enter the AWS keys securely. Default: Fallback to Boto, more information [here](https://boto3.amazonaws.com/v1/documentation/api/latest/guide/configuration.html#configuring-credentials).
 * `--region`: AWS Region.
 * `--empty-receive`: _[OPTIONAL]_[**default value=10**] Number of empty receives before the script gives up trying to get message from queue.*
 
