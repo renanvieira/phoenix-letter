@@ -1,6 +1,8 @@
 import json
 import six
 
+from phoenix_letter.common.enums import ReasonStopEnum
+
 if six.PY2:
     from mock import patch
 else:
@@ -30,8 +32,6 @@ class MoveMessagesTestCase(BaseTestCase):
         self.args.append("--dst")
         self.args.append("queue_b")
 
-        self.args.append("--aws-keys")
-
         self.args.append("--region")
         self.args.append(self.region)
 
@@ -45,21 +45,20 @@ class MoveMessagesTestCase(BaseTestCase):
         self.sqs.create_queue(QueueName="queue_a")
         self.queue_a_url = self.sqs.get_queue_url(QueueName="queue_a")['QueueUrl']
 
-        message = self.__create_message()
-
-        self.sqs.send_message(QueueUrl=self.queue_a_url,
-                              MessageBody=message['Body'],
-                              MessageAttributes=message['MessageAttributes'])
-
         self.sqs.create_queue(QueueName="queue_b")
         self.queue_b_url = self.sqs.get_queue_url(QueueName="queue_b")['QueueUrl']
 
     def tearDown(self):
+        self._clean_queues()
+
+    def _clean_queues(self):
         self.sqs.purge_queue(QueueUrl=self.queue_a_url)
         self.sqs.purge_queue(QueueUrl=self.queue_b_url)
 
-    @patch("phoenix_letter.main.getpass")
+    @patch("phoenix_letter.common.credentials.getpass")
     def test_move_message_with_aws_key(self, mock_get_pass):
+        self.args.append("--aws-keys")
+
         mock_get_pass.side_effect = [self.access_key, self.secret_key] * 2
 
         with self.subTest("move_message_without_args"):
@@ -68,11 +67,14 @@ class MoveMessagesTestCase(BaseTestCase):
 
             self.assertEqual(cm.exception.code, 2)
         with self.subTest("move_message_empty"):
+            self._clean_queues()
             main(self.args)
 
             self.assertEqual(mock_get_pass.call_count, 2)
             mock_get_pass.reset_mock()
         with self.subTest("move_message"):
+            self.add_message(self.queue_a_url)
+
             main(self.args)
 
             self.assertEquals(mock_get_pass.call_count, 2)
@@ -102,19 +104,19 @@ class MoveMessagesTestCase(BaseTestCase):
 
     @patch("phoenix_letter.main.getpass")
     def test_move_message_without_aws_key(self, mock_get_pass):
-        self.args.remove("--aws-keys")
-
         with self.subTest("move_message_without_args"):
             with self.assertRaises(SystemExit) as cm:
                 main([])
 
             self.assertEqual(cm.exception.code, 2)
         with self.subTest("move_message_empty"):
+            self._clean_queues()
             main(self.args)
 
             mock_get_pass.assert_not_called()
             mock_get_pass.reset_mock()
         with self.subTest("move_message"):
+            self.add_message(self.queue_a_url)
             main(self.args)
 
             mock_get_pass.assert_not_called()
@@ -142,21 +144,61 @@ class MoveMessagesTestCase(BaseTestCase):
             self.assertEqual(msg_attributes["Attribute2"]["DataType"], "String")
             mock_get_pass.reset_mock()
 
-    def __create_message(self):
-        message = dict()
-        message["Body"] = json.dumps(dict(test="This is a test"))
+    @patch("phoenix_letter.common.credentials.getpass")
+    def test_move_message_max_message(self, mock_get_pass):
+        self.args.append("--aws-keys")
+        self.args.append("--max")
+        self.args.append("1")
+        self.args.append("--max-per-request")
+        self.args.append("1")
 
-        message_attr = {
-            'Attribute1': {
-                'StringValue': 'Attribute Value',
-                'DataType': 'String'
-            },
-            'Attribute2': {
-                'StringValue': 'Attribute 2 Value',
-                'DataType': 'String'
-            },
-        }
+        mock_get_pass.side_effect = [self.access_key, self.secret_key] * 2
 
-        message["MessageAttributes"] = message_attr
+        with self.subTest("move_message_without_args"):
+            with self.assertRaises(SystemExit) as cm:
+                main([])
 
-        return message
+            self.assertEqual(cm.exception.code, 2)
+        with self.subTest("move_message_empty"):
+            self._clean_queues()
+            result = main(self.args)
+
+            self.assertEquals(result, ReasonStopEnum.EMPTY_RECEIVED)
+            self.assertEqual(mock_get_pass.call_count, 2)
+            mock_get_pass.reset_mock()
+        with self.subTest("move_message"):
+            self.add_message(self.queue_a_url)
+            self.add_message(self.queue_a_url)
+
+            before_processing = self.get_number_of_message(self.queue_a_url)
+
+            result = main(self.args)
+
+            after_processing = self.get_number_of_message(self.queue_a_url)
+
+            self.assertEquals(result, ReasonStopEnum.MAX_MESSAGES_RECEIVED)
+            self.assertEquals(after_processing, before_processing - 1)
+            self.assertEquals(mock_get_pass.call_count, 2)
+
+            dst_message = self.sqs.receive_message(QueueUrl=self.queue_b_url,
+                                                   MessageAttributeNames=["All"],
+                                                   AttributeNames=['All'],
+                                                   MaxNumberOfMessages=10)
+
+            self.assertIsNotNone(dst_message)
+            self.assertIn("Messages", dst_message)
+            self.assertTrue(len(dst_message["Messages"]) == 1)
+
+            first_message = dst_message["Messages"][0]
+            self.assertEqual(first_message["Body"], json.dumps(dict(test="This is a test")))
+
+            msg_attributes = first_message["MessageAttributes"]
+            self.assertIn("Attribute1", msg_attributes)
+            self.assertIn("Attribute2", msg_attributes)
+
+            self.assertEqual(msg_attributes["Attribute1"]["StringValue"], "Attribute Value")
+            self.assertEqual(msg_attributes["Attribute1"]["DataType"], "String")
+
+            self.assertEqual(msg_attributes["Attribute2"]["StringValue"], "Attribute 2 Value")
+            self.assertEqual(msg_attributes["Attribute2"]["DataType"], "String")
+            mock_get_pass.reset_mock()
