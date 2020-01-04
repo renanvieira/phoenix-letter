@@ -1,8 +1,6 @@
 import random
 import sys
-from argparse import ArgumentParser
 from time import sleep
-from getpass import getpass
 
 import boto3
 

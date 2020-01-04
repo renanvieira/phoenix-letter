@@ -1,8 +1,12 @@
 import json
 import logging
 import sys
+
+import boto3
 import six
 from moto import mock_sqs
+
+from phoenix_letter.main import main
 
 if six.PY2:
     from unittest2 import TestCase
@@ -22,15 +26,43 @@ logging.basicConfig(
 
 logger = logging.getLogger(__name__)
 
+
 @mock_sqs
 class BaseTestCase(TestCase):
 
     def setUp(self):
-        self.sqs = None
+        self.region = "us-east-1"
+
+        self.access_key = "AWS_ACCESS_MOCKED_KEY"
+        self.secret_key = "AWS_SECRET_MOCKED_KEY"
+
+        self.args = list()
+
+        self.args.append("--src")
+        self.args.append("queue_a")
+
+        self.args.append("--dst")
+        self.args.append("queue_b")
+
+        self.args.append("--region")
+        self.args.append(self.region)
+
+        self.args.append("--empty-receive")
+        self.args.append("2")
+
+        self.sqs = boto3.client("sqs", region_name=self.region,
+                                aws_access_key_id=self.access_key,
+                                aws_secret_access_key=self.secret_key)
+
+        self.sqs.create_queue(QueueName="queue_a")
+        self.queue_a_url = self.sqs.get_queue_url(QueueName="queue_a")['QueueUrl']
+
+        self.sqs.create_queue(QueueName="queue_b")
+        self.queue_b_url = self.sqs.get_queue_url(QueueName="queue_b")['QueueUrl']
 
     def tearDown(self):
-        pass
-
+        self._clean_queues([self.queue_a_url, self.queue_b_url])
+    
     def _create_message(self):
         message = dict()
         message["Body"] = json.dumps(dict(test="This is a test"))
@@ -60,3 +92,7 @@ class BaseTestCase(TestCase):
         attributes = self.sqs.get_queue_attributes(QueueUrl=queue_url, AttributeNames=['ApproximateNumberOfMessages'])
 
         return int(attributes['Attributes'].get("ApproximateNumberOfMessages"))
+
+    def _clean_queues(self, queues):
+        for q in queues:
+            self.sqs.purge_queue(QueueUrl=q)
