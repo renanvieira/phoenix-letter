@@ -6,39 +6,9 @@ from getpass import getpass
 
 import boto3
 
-
-def parse_arguments(args):
-    parser = ArgumentParser()
-    parser.add_argument("--src", dest="source",
-                        required=True,
-                        help="Source SQS Queue Name",
-                        metavar="SOURCE_QUEUE")
-
-    parser.add_argument("--dst", dest="destination",
-                        required=True,
-                        help="Destination SQS Queue Name",
-                        metavar="DESTINATION_QUEUE")
-
-    parser.add_argument("--aws-keys", dest="input_keys",
-                        help="Flag that indicates you want to enter custom AWS keys.", action='store_true')
-
-    parser.add_argument("--region", dest="region", default="us-east-1",
-                        required=True,
-                        help="AWS Region",
-                        metavar="REGION")
-
-    parser.add_argument("--empty-receive", dest="max_empty_receives_count", default=10,
-                        help="Max number of empty receives before giving up",
-                        metavar="EMPTY_RECEIVE")
-
-    return parser.parse_args(args)
-
-
-def get_credentials():
-    access_key = getpass("AWS Access Key:")
-    secret_key = getpass("AWS Secret Key:")
-
-    return access_key, secret_key
+from phoenix_letter.common.arguments import parse_arguments
+from phoenix_letter.common.credentials import get_credentials
+from phoenix_letter.common.enums import ReasonStopEnum
 
 
 def main(args=None):
@@ -62,12 +32,22 @@ def main(args=None):
     destination_queue_url = destination_queue['QueueUrl']
 
     number_of_empty_receives = 0
+    total_messages_received = 0
 
-    while number_of_empty_receives <= int(args.max_empty_receives_count):
+    reason = None
+
+    while True:
+        if number_of_empty_receives == int(args.max_empty_receives_count):
+            reason = ReasonStopEnum.EMPTY_RECEIVED
+            break
+        elif 0 < args.max_messages <= total_messages_received:
+            reason = ReasonStopEnum.MAX_MESSAGES_RECEIVED
+            break
+
         print("Receiving message...")
         received_response = sqs_client.receive_message(QueueUrl=source_queue_url, MessageAttributeNames=["All"],
                                                        AttributeNames=['All'],
-                                                       MaxNumberOfMessages=10)
+                                                       MaxNumberOfMessages=args.max_receive_messages)
 
         if ("Messages" not in received_response) or (len(received_response['Messages']) == 0):
             print("Queue did not returned messages")
@@ -80,7 +60,11 @@ def main(args=None):
 
             continue
 
-        print("Received {} messages".format(len(received_response['Messages'])))
+        messages_received = len(received_response['Messages'])
+
+        total_messages_received += messages_received
+
+        print("Received {} messages".format(messages_received))
 
         for message in received_response['Messages']:
             print("Sending message to '{}'".format(args.destination))
@@ -93,8 +77,15 @@ def main(args=None):
             sqs_client.delete_message(QueueUrl=source_queue_url,
                                       ReceiptHandle=message['ReceiptHandle'])
 
-    print("Giving up after {} empty receives from the source queue.".format(number_of_empty_receives))
+    if reason == ReasonStopEnum.MAX_MESSAGES_RECEIVED:
+        print("Stopping after processing {} messages.".format(total_messages_received))
+    else:
+        print("Giving up after {} empty receives from the source queue.".format(number_of_empty_receives))
+
+    return reason
 
 
 if __name__ == "__main__":
-    sys.exit(main(sys.argv[1:]))
+    response = main(sys.argv[1:])
+    print("Stop Reason: {}".format(response.name))
+    sys.exit(0)
