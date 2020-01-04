@@ -67,7 +67,7 @@ setup(
         'Programming Language :: Python :: 3.8'
     ],
     install_requires=[
-        "boto3"
+        "boto3", 'six', 'mock'
     ],
     test_suite='tests/',
     tests_require=[
