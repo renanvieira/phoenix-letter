@@ -54,7 +54,7 @@ class MoveMessagesTestCase(BaseTestCase):
         self.sqs.purge_queue(QueueUrl=self.queue_b_url)
 
     @patch("phoenix_letter.main.getpass")
-    def test_move_message_with_aws_key(self, mock_get_pass: MagicMock):
+    def test_move_message_with_aws_key(self, mock_get_pass):
         mock_get_pass.side_effect = [self.access_key, self.secret_key] * 2
 
         with self.subTest("move_message_without_args"):
@@ -96,7 +96,7 @@ class MoveMessagesTestCase(BaseTestCase):
             mock_get_pass.reset_mock()
 
     @patch("phoenix_letter.main.getpass")
-    def test_move_message_without_aws_key(self, mock_get_pass: MagicMock):
+    def test_move_message_without_aws_key(self, mock_get_pass):
         self.args.remove("--aws-keys")
 
         with self.subTest("move_message_without_args"):
