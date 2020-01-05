@@ -1,7 +1,5 @@
-run-tests:
-	nosetests tests/ --with-coverage --cover-package=phoenix_letter -s
+clean:
+	find . -name "*.py[co]" -o -name __pycache__ -exec rm -rf {} +
 
-update-pypi:
-	rm -rf dist/*
-	python setup.py sdist
-	twine upload dist/*
+run-tests: clean
+	nosetests tests/ --with-coverage --cover-package=phoenix_letter -s
