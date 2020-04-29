@@ -2,6 +2,9 @@
  
 Bring your messages back from [Dead Letter Queue](https://en.wikipedia.org/wiki/Dead_letter_queue) with this command line script that helps you moving messages from DLQ back to the main queue for reprocessing [SQS](https://aws.amazon.com/sqs/?nc1=h_ls) queues. It also can be used to move messages between queues in SQS.
 
+## Install
+```python3 setup.py install```
+
 ## Usage
 
 After installation you will have a command with the following params:
