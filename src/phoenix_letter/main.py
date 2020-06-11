@@ -66,10 +66,14 @@ def main(args=None):
 
         for message in received_response['Messages']:
             print("Sending message to '{}'".format(args.destination))
-
-            send_response = sqs_client.send_message(QueueUrl=destination_queue_url,
+            
+            if 'MessageAttributes' in message:
+                send_response = sqs_client.send_message(QueueUrl=destination_queue_url,
                                                     MessageBody=message['Body'],
                                                     MessageAttributes=message['MessageAttributes'])
+            else: 
+                send_response = sqs_client.send_message(QueueUrl=destination_queue_url,
+                                                    MessageBody=message['Body'])
 
             print("Deleting message from '{}'".format(args.source))
             sqs_client.delete_message(QueueUrl=source_queue_url,
