@@ -1,7 +1,6 @@
 import json
 
 import six
-
 from phoenix_letter.common.enums import ReasonStopEnum
 
 if six.PY2:
