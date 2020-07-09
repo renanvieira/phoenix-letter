@@ -1,7 +1,6 @@
 import json
 
 import six
-
 from phoenix_letter.common.enums import ReasonStopEnum
 
 if six.PY2:
@@ -9,7 +8,6 @@ if six.PY2:
 else:
     from unittest.mock import patch
 
-import boto3
 from moto import mock_sqs
 
 from phoenix_letter.main import main
@@ -77,4 +75,30 @@ class MoveMessagesTestCase(BaseTestCase):
 
         self.assertEqual(msg_attributes["Attribute2"]["StringValue"], "Attribute 2 Value")
         self.assertEqual(msg_attributes["Attribute2"]["DataType"], "String")
+        mock_get_pass.reset_mock()
+
+    def test_move_message_without_message_attributes(self, mock_get_pass):
+        mock_get_pass.side_effect = [self.access_key, self.secret_key] * 2
+
+        self.add_message(self.queue_a_url, with_message_attributes=False)
+
+        result = main(self.args)
+
+        self.assertEquals(result, ReasonStopEnum.EMPTY_RECEIVED)
+
+        self.assertEquals(mock_get_pass.call_count, 2)
+
+        dst_message = self.sqs.receive_message(QueueUrl=self.queue_b_url,
+                                               MessageAttributeNames=["All"],
+                                               AttributeNames=['All'],
+                                               MaxNumberOfMessages=10)
+
+        self.assertIsNotNone(dst_message)
+        self.assertIn("Messages", dst_message)
+        self.assertTrue(len(dst_message["Messages"]) == 1)
+
+        first_message = dst_message["Messages"][0]
+        self.assertEqual(first_message["Body"], json.dumps(dict(test="This is a test")))
+        self.assertNotIn("MessagAttributes", dst_message)
+
         mock_get_pass.reset_mock()
