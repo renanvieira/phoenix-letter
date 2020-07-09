@@ -1,5 +1,4 @@
-pip==19.3.1
-setuptools==44.0.0
+setuptools==49.1.0
 coverage-badge
 twine
 -r test-requirements.txt
