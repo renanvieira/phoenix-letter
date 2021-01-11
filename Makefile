@@ -3,3 +3,6 @@ clean:
 
 run-tests: clean
 	nosetests tests/ --with-coverage --cover-package=phoenix_letter -s
+
+lint-check: clean
+	black --check . && isort --check .

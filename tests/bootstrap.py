@@ -71,7 +71,10 @@ class BaseTestCase(TestCase):
         if with_message_attributes:
             message_attr = {
                 "Attribute1": {"StringValue": "Attribute Value", "DataType": "String"},
-                "Attribute2": {"StringValue": "Attribute 2 Value", "DataType": "String"},
+                "Attribute2": {
+                    "StringValue": "Attribute 2 Value",
+                    "DataType": "String",
+                },
             }
 
             message["MessageAttributes"] = message_attr
@@ -81,7 +84,9 @@ class BaseTestCase(TestCase):
     def add_message(self, queue_url, with_message_attributes=True):
         message = self._create_message(with_message_attributes=with_message_attributes)
 
-        attributes = message["MessageAttributes"] if "MessageAttributes" in message else {}
+        attributes = (
+            message["MessageAttributes"] if "MessageAttributes" in message else {}
+        )
 
         self.sqs.send_message(
             QueueUrl=queue_url,
