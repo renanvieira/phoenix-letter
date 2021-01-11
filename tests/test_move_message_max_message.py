@@ -1,6 +1,7 @@
 import json
 
 import six
+
 from phoenix_letter.common.enums import ReasonStopEnum
 
 if six.PY2:
@@ -11,14 +12,12 @@ else:
 from moto import mock_sqs
 
 from phoenix_letter.main import main
-
 from tests.bootstrap import BaseTestCase
 
 
 @mock_sqs
 @patch("phoenix_letter.common.credentials.getpass")
 class MoveMessagesWithMaxMessageLimitTestCase(BaseTestCase):
-
     def setUp(self):
         super(MoveMessagesWithMaxMessageLimitTestCase, self).setUp()
         self.args.append("--aws-keys")
@@ -66,10 +65,12 @@ class MoveMessagesWithMaxMessageLimitTestCase(BaseTestCase):
         self.assertEquals(after_processing, before_processing - 1)
         self.assertEquals(mock_get_pass.call_count, 2)
 
-        dst_message = self.sqs.receive_message(QueueUrl=self.queue_b_url,
-                                               MessageAttributeNames=["All"],
-                                               AttributeNames=['All'],
-                                               MaxNumberOfMessages=10)
+        dst_message = self.sqs.receive_message(
+            QueueUrl=self.queue_b_url,
+            MessageAttributeNames=["All"],
+            AttributeNames=["All"],
+            MaxNumberOfMessages=10,
+        )
 
         self.assertIsNotNone(dst_message)
         self.assertIn("Messages", dst_message)
@@ -85,6 +86,8 @@ class MoveMessagesWithMaxMessageLimitTestCase(BaseTestCase):
         self.assertEqual(msg_attributes["Attribute1"]["StringValue"], "Attribute Value")
         self.assertEqual(msg_attributes["Attribute1"]["DataType"], "String")
 
-        self.assertEqual(msg_attributes["Attribute2"]["StringValue"], "Attribute 2 Value")
+        self.assertEqual(
+            msg_attributes["Attribute2"]["StringValue"], "Attribute 2 Value"
+        )
         self.assertEqual(msg_attributes["Attribute2"]["DataType"], "String")
         mock_get_pass.reset_mock()

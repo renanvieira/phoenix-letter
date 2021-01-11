@@ -1,14 +1,14 @@
 language: python
 python:
-  - "2.7"
-  - "3.5"
-  - "3.6"
   - "3.7"
   - "3.8"
+  - "3.9"
 before_install:
   - sudo rm -f /etc/boto.cfg
   - export BOTO_CONFIG=/dev/null
+  - python -m pip install --upgrade pip
 install:
   - pip install -r requirements/test-requirements.txt
 script:
+  - make lint-check
   - make run-tests
