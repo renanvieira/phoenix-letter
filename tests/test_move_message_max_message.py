@@ -12,14 +12,12 @@ else:
 from moto import mock_sqs
 
 from phoenix_letter.main import main
-
 from tests.bootstrap import BaseTestCase
 
 
 @mock_sqs
 @patch("phoenix_letter.common.credentials.getpass")
 class MoveMessagesWithMaxMessageLimitTestCase(BaseTestCase):
-
     def setUp(self):
         super(MoveMessagesWithMaxMessageLimitTestCase, self).setUp()
         self.args.append("--aws-keys")
@@ -67,10 +65,9 @@ class MoveMessagesWithMaxMessageLimitTestCase(BaseTestCase):
         self.assertEquals(after_processing, before_processing - 1)
         self.assertEquals(mock_get_pass.call_count, 2)
 
-        dst_message = self.sqs.receive_message(QueueUrl=self.queue_b_url,
-                                               MessageAttributeNames=["All"],
-                                               AttributeNames=['All'],
-                                               MaxNumberOfMessages=10)
+        dst_message = self.sqs.receive_message(
+            QueueUrl=self.queue_b_url, MessageAttributeNames=["All"], AttributeNames=["All"], MaxNumberOfMessages=10,
+        )
 
         self.assertIsNotNone(dst_message)
         self.assertIn("Messages", dst_message)

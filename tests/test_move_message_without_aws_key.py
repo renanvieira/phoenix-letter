@@ -12,13 +12,11 @@ else:
 from moto import mock_sqs
 
 from phoenix_letter.main import main
-
 from tests.bootstrap import BaseTestCase
 
 
 @mock_sqs
 class MoveMessagesWithoutAWSKeysTestCase(BaseTestCase):
-
     def setUp(self):
         super(MoveMessagesWithoutAWSKeysTestCase, self).setUp()
 
@@ -40,10 +38,9 @@ class MoveMessagesWithoutAWSKeysTestCase(BaseTestCase):
         self.assertEquals(result, ReasonStopEnum.EMPTY_RECEIVED)
         mock_get_pass.assert_not_called()
 
-        dst_message = self.sqs.receive_message(QueueUrl=self.queue_b_url,
-                                               MessageAttributeNames=["All"],
-                                               AttributeNames=['All'],
-                                               MaxNumberOfMessages=10)
+        dst_message = self.sqs.receive_message(
+            QueueUrl=self.queue_b_url, MessageAttributeNames=["All"], AttributeNames=["All"], MaxNumberOfMessages=10,
+        )
 
         self.assertIsNotNone(dst_message)
 
