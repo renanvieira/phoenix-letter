@@ -1,6 +1,7 @@
 import json
 
 import six
+
 from phoenix_letter.common.enums import ReasonStopEnum
 
 if six.PY2:
@@ -17,7 +18,6 @@ from tests.bootstrap import BaseTestCase
 @mock_sqs
 @patch("phoenix_letter.common.credentials.getpass")
 class MoveMessagesTestCase(BaseTestCase):
-
     def setUp(self):
         super(MoveMessagesTestCase, self).setUp()
 
@@ -54,10 +54,9 @@ class MoveMessagesTestCase(BaseTestCase):
 
         self.assertEquals(mock_get_pass.call_count, 2)
 
-        dst_message = self.sqs.receive_message(QueueUrl=self.queue_b_url,
-                                               MessageAttributeNames=["All"],
-                                               AttributeNames=['All'],
-                                               MaxNumberOfMessages=10)
+        dst_message = self.sqs.receive_message(
+            QueueUrl=self.queue_b_url, MessageAttributeNames=["All"], AttributeNames=["All"], MaxNumberOfMessages=10,
+        )
 
         self.assertIsNotNone(dst_message)
         self.assertIn("Messages", dst_message)
@@ -88,10 +87,9 @@ class MoveMessagesTestCase(BaseTestCase):
 
         self.assertEquals(mock_get_pass.call_count, 2)
 
-        dst_message = self.sqs.receive_message(QueueUrl=self.queue_b_url,
-                                               MessageAttributeNames=["All"],
-                                               AttributeNames=['All'],
-                                               MaxNumberOfMessages=10)
+        dst_message = self.sqs.receive_message(
+            QueueUrl=self.queue_b_url, MessageAttributeNames=["All"], AttributeNames=["All"], MaxNumberOfMessages=10,
+        )
 
         self.assertIsNotNone(dst_message)
         self.assertIn("Messages", dst_message)

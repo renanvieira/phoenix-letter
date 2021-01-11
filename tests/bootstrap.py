@@ -49,10 +49,7 @@ class BaseTestCase(TestCase):
         self.args.append("2")
 
         self.sqs = boto3.client(
-            "sqs",
-            region_name=self.region,
-            aws_access_key_id=self.access_key,
-            aws_secret_access_key=self.secret_key,
+            "sqs", region_name=self.region, aws_access_key_id=self.access_key, aws_secret_access_key=self.secret_key,
         )
 
         self.sqs.create_queue(QueueName="queue_a")
@@ -71,7 +68,7 @@ class BaseTestCase(TestCase):
         if with_message_attributes:
             message_attr = {
                 "Attribute1": {"StringValue": "Attribute Value", "DataType": "String"},
-                "Attribute2": {"StringValue": "Attribute 2 Value", "DataType": "String"},
+                "Attribute2": {"StringValue": "Attribute 2 Value", "DataType": "String",},
             }
 
             message["MessageAttributes"] = message_attr
@@ -84,15 +81,11 @@ class BaseTestCase(TestCase):
         attributes = message["MessageAttributes"] if "MessageAttributes" in message else {}
 
         self.sqs.send_message(
-            QueueUrl=queue_url,
-            MessageBody=message["Body"],
-            MessageAttributes=attributes,
+            QueueUrl=queue_url, MessageBody=message["Body"], MessageAttributes=attributes,
         )
 
     def get_number_of_message(self, queue_url):
-        attributes = self.sqs.get_queue_attributes(
-            QueueUrl=queue_url, AttributeNames=["ApproximateNumberOfMessages"]
-        )
+        attributes = self.sqs.get_queue_attributes(QueueUrl=queue_url, AttributeNames=["ApproximateNumberOfMessages"])
 
         return int(attributes["Attributes"].get("ApproximateNumberOfMessages"))
 

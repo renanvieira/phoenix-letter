@@ -17,17 +17,17 @@ def main(args=None):
     else:
         aws_access_key, aws_secret_key = (None, None)
 
-    sqs_client = boto3.client("sqs", region_name=args.region,
-                              aws_access_key_id=aws_access_key,
-                              aws_secret_access_key=aws_secret_key)
+    sqs_client = boto3.client(
+        "sqs", region_name=args.region, aws_access_key_id=aws_access_key, aws_secret_access_key=aws_secret_key,
+    )
 
     print("Getting Queue URLs")
 
     source_queue = sqs_client.get_queue_url(QueueName=args.source)
-    source_queue_url = source_queue['QueueUrl']
+    source_queue_url = source_queue["QueueUrl"]
 
     destination_queue = sqs_client.get_queue_url(QueueName=args.destination)
-    destination_queue_url = destination_queue['QueueUrl']
+    destination_queue_url = destination_queue["QueueUrl"]
 
     number_of_empty_receives = 0
     total_messages_received = 0
@@ -43,11 +43,14 @@ def main(args=None):
             break
 
         print("Receiving message...")
-        received_response = sqs_client.receive_message(QueueUrl=source_queue_url, MessageAttributeNames=["All"],
-                                                       AttributeNames=['All'],
-                                                       MaxNumberOfMessages=args.max_receive_messages)
+        received_response = sqs_client.receive_message(
+            QueueUrl=source_queue_url,
+            MessageAttributeNames=["All"],
+            AttributeNames=["All"],
+            MaxNumberOfMessages=args.max_receive_messages,
+        )
 
-        if ("Messages" not in received_response) or (len(received_response['Messages']) == 0):
+        if ("Messages" not in received_response) or (len(received_response["Messages"]) == 0):
             print("Queue did not returned messages")
 
             number_of_empty_receives += 1
@@ -58,26 +61,26 @@ def main(args=None):
 
             continue
 
-        messages_received = len(received_response['Messages'])
+        messages_received = len(received_response["Messages"])
 
         total_messages_received += messages_received
 
         print("Received {} messages".format(messages_received))
 
-        for message in received_response['Messages']:
+        for message in received_response["Messages"]:
             print("Sending message to '{}'".format(args.destination))
 
-            if 'MessageAttributes' in message:
-                send_response = sqs_client.send_message(QueueUrl=destination_queue_url,
-                                                        MessageBody=message['Body'],
-                                                        MessageAttributes=message['MessageAttributes'])
+            if "MessageAttributes" in message:
+                send_response = sqs_client.send_message(
+                    QueueUrl=destination_queue_url,
+                    MessageBody=message["Body"],
+                    MessageAttributes=message["MessageAttributes"],
+                )
             else:
-                send_response = sqs_client.send_message(QueueUrl=destination_queue_url,
-                                                        MessageBody=message['Body'])
+                send_response = sqs_client.send_message(QueueUrl=destination_queue_url, MessageBody=message["Body"])
 
             print("Deleting message from '{}'".format(args.source))
-            sqs_client.delete_message(QueueUrl=source_queue_url,
-                                      ReceiptHandle=message['ReceiptHandle'])
+            sqs_client.delete_message(QueueUrl=source_queue_url, ReceiptHandle=message["ReceiptHandle"])
 
     if reason == ReasonStopEnum.MAX_MESSAGES_RECEIVED:
         print("Stopping after processing {} messages.".format(total_messages_received))
