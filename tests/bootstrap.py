@@ -1,15 +1,10 @@
 import json
 import logging
 import sys
+from unittest import TestCase
 
 import boto3
-import six
 from moto import mock_sqs
-
-if six.PY2:
-    from unittest2 import TestCase
-else:
-    from unittest import TestCase
 
 logging.getLogger("boto3").setLevel(logging.CRITICAL)
 logging.getLogger("botocore").setLevel(logging.CRITICAL)

@@ -1,16 +1,9 @@
 import json
-
-import six
-
-from phoenix_letter.common.enums import ReasonStopEnum
-
-if six.PY2:
-    from mock import patch
-else:
-    from unittest.mock import patch
+from unittest.mock import patch
 
 from moto import mock_sqs
 
+from phoenix_letter.common.enums import ReasonStopEnum
 from phoenix_letter.main import main
 from tests.bootstrap import BaseTestCase
 
@@ -44,7 +37,7 @@ class MoveMessagesWithMaxMessageLimitTestCase(BaseTestCase):
 
         result = main(self.args)
 
-        self.assertEquals(result, ReasonStopEnum.EMPTY_RECEIVED)
+        self.assertEqual(result, ReasonStopEnum.EMPTY_RECEIVED)
         self.assertEqual(mock_get_pass.call_count, 2)
 
         mock_get_pass.reset_mock()
@@ -61,9 +54,9 @@ class MoveMessagesWithMaxMessageLimitTestCase(BaseTestCase):
 
         after_processing = self.get_number_of_message(self.queue_a_url)
 
-        self.assertEquals(result, ReasonStopEnum.MAX_MESSAGES_RECEIVED)
-        self.assertEquals(after_processing, before_processing - 1)
-        self.assertEquals(mock_get_pass.call_count, 2)
+        self.assertEqual(result, ReasonStopEnum.MAX_MESSAGES_RECEIVED)
+        self.assertEqual(after_processing, before_processing - 1)
+        self.assertEqual(mock_get_pass.call_count, 2)
 
         dst_message = self.sqs.receive_message(
             QueueUrl=self.queue_b_url,
