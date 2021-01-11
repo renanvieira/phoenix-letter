@@ -1,16 +1,9 @@
 import json
-
-import six
-
-from phoenix_letter.common.enums import ReasonStopEnum
-
-if six.PY2:
-    from mock import patch
-else:
-    from unittest.mock import patch
+from unittest.mock import patch
 
 from moto import mock_sqs
 
+from phoenix_letter.common.enums import ReasonStopEnum
 from phoenix_letter.main import main
 from tests.bootstrap import BaseTestCase
 
@@ -35,7 +28,7 @@ class MoveMessagesWithoutAWSKeysTestCase(BaseTestCase):
 
         result = main(self.args)
 
-        self.assertEquals(result, ReasonStopEnum.EMPTY_RECEIVED)
+        self.assertEqual(result, ReasonStopEnum.EMPTY_RECEIVED)
         mock_get_pass.assert_not_called()
 
         dst_message = self.sqs.receive_message(
@@ -70,7 +63,7 @@ class MoveMessagesWithoutAWSKeysTestCase(BaseTestCase):
     def test_move_message_empty(self, mock_get_pass):
         result = main(self.args)
 
-        self.assertEquals(result, ReasonStopEnum.EMPTY_RECEIVED)
+        self.assertEqual(result, ReasonStopEnum.EMPTY_RECEIVED)
 
         mock_get_pass.assert_not_called()
         mock_get_pass.reset_mock()

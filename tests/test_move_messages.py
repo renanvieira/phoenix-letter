@@ -1,16 +1,9 @@
 import json
-
-import six
-
-from phoenix_letter.common.enums import ReasonStopEnum
-
-if six.PY2:
-    from mock import patch
-else:
-    from unittest.mock import patch
+from unittest.mock import patch
 
 from moto import mock_sqs
 
+from phoenix_letter.common.enums import ReasonStopEnum
 from phoenix_letter.main import main
 from tests.bootstrap import BaseTestCase
 
@@ -38,7 +31,7 @@ class MoveMessagesTestCase(BaseTestCase):
         self._clean_queues([self.queue_a_url, self.queue_b_url])
         result = main(self.args)
 
-        self.assertEquals(result, ReasonStopEnum.EMPTY_RECEIVED)
+        self.assertEqual(result, ReasonStopEnum.EMPTY_RECEIVED)
 
         self.assertEqual(mock_get_pass.call_count, 2)
         mock_get_pass.reset_mock()
@@ -50,9 +43,9 @@ class MoveMessagesTestCase(BaseTestCase):
 
         result = main(self.args)
 
-        self.assertEquals(result, ReasonStopEnum.EMPTY_RECEIVED)
+        self.assertEqual(result, ReasonStopEnum.EMPTY_RECEIVED)
 
-        self.assertEquals(mock_get_pass.call_count, 2)
+        self.assertEqual(mock_get_pass.call_count, 2)
 
         dst_message = self.sqs.receive_message(
             QueueUrl=self.queue_b_url,
@@ -88,9 +81,9 @@ class MoveMessagesTestCase(BaseTestCase):
 
         result = main(self.args)
 
-        self.assertEquals(result, ReasonStopEnum.EMPTY_RECEIVED)
+        self.assertEqual(result, ReasonStopEnum.EMPTY_RECEIVED)
 
-        self.assertEquals(mock_get_pass.call_count, 2)
+        self.assertEqual(mock_get_pass.call_count, 2)
 
         dst_message = self.sqs.receive_message(
             QueueUrl=self.queue_b_url,

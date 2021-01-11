@@ -2,7 +2,8 @@ clean:
 	find . -name "*.py[co]" -o -name __pycache__ -exec rm -rf {} +
 
 run-tests: clean
-	nosetests tests/ --with-coverage --cover-package=phoenix_letter -s
+	PYTHONPATH=src/ coverage run --source=src/phoenix_letter -m unittest discover
+	coverage report -m
 
 lint-check: clean
 	black --check . && isort --check .
