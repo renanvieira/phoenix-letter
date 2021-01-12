@@ -1,0 +1,14 @@
+version: 2
+updates:
+  - package-ecosystem: "python" # See documentation for possible values
+    directory: "requirements/" # Location of package manifests
+    default_reviewers:
+      - renanvieira
+    schedule:
+      interval: "monthly"
+    default_labels:
+      - "dependabot"
+    ignored_updates:
+      - match:
+        dependency_name: "mock"
+        version_requirement: ">4.0.2"
