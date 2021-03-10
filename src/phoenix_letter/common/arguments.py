@@ -63,4 +63,12 @@ def parse_arguments(args):
         metavar="N",
     )
 
+    parser.add_argument(
+        "--group-id",
+        dest="group_id",
+        default=None,
+        help="Value for the MessageGroupId (used in FIFO queues)",
+        metavar="GROUP_ID",
+    )
+
     return parser.parse_args(args)
