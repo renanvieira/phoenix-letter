@@ -49,7 +49,7 @@ setup(
     long_description=parse_readme(),
     long_description_content_type="text/markdown",
     keywords=["AWS", "SQS", "Queue", "DLQ", "Dead", "Letter", "Queue"],
-    python_requires=">=2.7",
+    python_requires=">=3.7",
     zip_safe=False,
     entry_points={"console_scripts": ["phoenix_letter=phoenix_letter.main:main"]},
     classifiers=[
