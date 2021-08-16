@@ -75,16 +75,17 @@ def main(args=None):
         for message in received_response["Messages"]:
             print("Sending message to '{}'".format(args.destination))
 
+            message_params = dict(
+                QueueUrl=destination_queue_url, MessageBody=message["Body"]
+            )
+
             if "MessageAttributes" in message:
-                sqs_client.send_message(
-                    QueueUrl=destination_queue_url,
-                    MessageBody=message["Body"],
-                    MessageAttributes=message["MessageAttributes"],
-                )
-            else:
-                sqs_client.send_message(
-                    QueueUrl=destination_queue_url, MessageBody=message["Body"]
-                )
+                message_params["MessageAttributes"] = message["MessageAttributes"]
+
+            if args.is_fifo:
+                message_params["MessageGroupId"] = args.fifo_group_id
+
+            sqs_client.send_message(**message_params)
 
             print("Deleting message from '{}'".format(args.source))
             sqs_client.delete_message(

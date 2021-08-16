@@ -1,4 +1,5 @@
 from argparse import ArgumentParser
+from json.encoder import py_encode_basestring
 
 
 def parse_arguments(args):
@@ -63,4 +64,25 @@ def parse_arguments(args):
         metavar="N",
     )
 
-    return parser.parse_args(args)
+    parser.add_argument(
+        "--fifo",
+        dest="is_fifo",
+        help="Flag that indicates you want to interact with a FIFO queue.",
+        action="store_true",
+    )
+
+    parser.add_argument(
+        "--group-id",
+        dest="fifo_group_id",
+        help="Value for the MessageGroupId (used in FIFO queues). Required if '--fifo' argument is passed. Default: NULL. ",
+        type=str,
+        default=None,
+        metavar="MESSAGE_GROUP_ID",
+    )
+
+    parsed_args = parser.parse_args(args)
+
+    if parsed_args.is_fifo is True and parsed_args.fifo_group_id is None:
+        parser.error("--fifo requires the argument --group-id.")
+
+    return parsed_args
