@@ -29,6 +29,9 @@ optional arguments:
                         Max number of empty receives before giving up
   --max N               Max number of messages to process from the source queue.
   --max-per-request N   Max number of messages to received from the source queue per request (this will be pass in the MaxNumberOfMessages param). Default: 10 (AWS API max limit)
+  --fifo                Flag that indicates you want to interact with a FIFO queue.
+  --group-id MESSAGE_GROUP_ID
+                        Value for the MessageGroupId (used in FIFO queues). Required if '--fifo' argument is passed. Default: NULL.
 ```
 
 * `--src`: Source Queue Name
@@ -39,7 +42,8 @@ optional arguments:
 * `--empty-receive`: _[OPTIONAL]_[**default value=10**] Number of empty receives before the script gives up trying to get message from queue.*
 * `--max`: _[OPTIONAL]_[**default value=0**] Number of messages to process from the source queue. _`0` means everything_*
 * `--max-per-request`: _[OPTIONAL]_[**default value=10**] Max number of messages to received from the source queue per request (this will be pass in the [MaxNumberOfMessages param](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/APIReference/API_ReceiveMessage.html#API_ReceiveMessage_RequestParameters)). Default: 10 (AWS API max limit)
-
+* `--fifo`: _[OPTIONAL]_[**default value=False**] Argument that indicates that it will connect to a FIFO queue
+* `--group-id`: _[OPTIONAL]_[**default value=None**] If you pass `--fifo` this will be a required argument, otherwise, it will be ignored.
 
 \* Sometimes the SQS returns false empty receives, where there is messages on queue but for some reason AWS decided not 
 return anything on that requests. To understand more [here a link from AWS docs](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-long-polling.html).
