@@ -1,4 +1,4 @@
-moto==2.2.2
+moto==3.0.2
 mock==4.0.3
 coverage==5.5
 six
