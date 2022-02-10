@@ -1,6 +1,6 @@
 # Phoenix Letter [![pypi](https://img.shields.io/pypi/v/phoenix_letter.svg)](https://pypi.org/project/phoenix-letter/)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
-![](https://img.shields.io/pypi/pyversions/phoenix_letter.svg) [![Build Status](https://travis-ci.com/renanvieira/phoenix-letter.svg?branch=master)](https://travis-ci.com/renanvieira/phoenix-letter) ![](coverage.svg) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) 
+![](https://img.shields.io/pypi/pyversions/phoenix_letter.svg) [![Build Status](https://github.com/renanvieira/phoenix-letter/actions/workflows/python-app.yml/badge.svg)](https://github.com/renanvieira/phoenix-letter/actions/workflows/python-app.yml) ![](coverage.svg) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) 
  
 Bring your messages back from [Dead Letter Queue](https://en.wikipedia.org/wiki/Dead_letter_queue) with this command line script that helps you moving messages from DLQ back to the main queue for reprocessing [SQS](https://aws.amazon.com/sqs/?nc1=h_ls) queues. It also can be used to move messages between queues in SQS.
 
