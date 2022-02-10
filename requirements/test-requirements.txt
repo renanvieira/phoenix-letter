@@ -1,6 +1,6 @@
 moto==2.2.2
 mock==4.0.3
-coverage==6.3
+coverage==6.3.1
 six
 black==22.1.0
 isort==5.9.3
