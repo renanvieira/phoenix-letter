@@ -1,4 +1,4 @@
-setuptools==60.8.2
+setuptools==61.3.0
 coverage-badge==1.0.1
 twine==3.8.0
 -r test-requirements.txt
