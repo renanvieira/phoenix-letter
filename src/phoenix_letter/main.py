@@ -83,7 +83,15 @@ def main(args=None):
                 message_params["MessageAttributes"] = message["MessageAttributes"]
 
             if args.is_fifo:
-                message_params["MessageGroupId"] = args.fifo_group_id
+                attributes = message.get("Attributes", {})
+                message_group_id = args.fifo_group_id
+                if message_group_id is None:
+                    message_group_id = attributes.get("MessageGroupId")
+
+                message_params["MessageGroupId"] = message_group_id
+
+                if attributes.get("MessageDeduplicationId"):
+                    message_params["MessageDeduplicationId"] = attributes.get("MessageDeduplicationId")
 
             sqs_client.send_message(**message_params)
 
