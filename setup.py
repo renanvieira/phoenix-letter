@@ -62,7 +62,7 @@ setup(
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
     ],
-    install_requires=["boto3", "six", "mock"],
+    install_requires=["boto3", "six"],
     test_suite="tests/",
-    tests_require=["nose", "moto", "coverage"],
+    tests_require=["moto", "coverage", "mock"],
 )
