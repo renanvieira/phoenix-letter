@@ -33,7 +33,9 @@ class MoveMessagesFIFOTestCase(BaseTestCase):
     @patch("phoenix_letter.common.credentials.getpass")
     def test_move_message_with_empty_queue(self, mock_get_pass):
         mock_get_pass.side_effect = [self.access_key, self.secret_key] * 2
-        self.args_fifo.append("--group-id=ABC")
+        message_group_id = "test_move_message_with_aws_key"
+
+        self.args_fifo.append(f"--group-id={message_group_id}")
 
         self._clean_queues([self.queue_a_fifo_url, self.queue_b_fifo_url])
         result = main(self.args_fifo)
@@ -45,10 +47,12 @@ class MoveMessagesFIFOTestCase(BaseTestCase):
 
     @patch("phoenix_letter.common.credentials.getpass")
     def test_move_message_with_aws_key(self, mock_get_pass):
-        self.args_fifo.append("--group-id=ABC")
+        message_group_id = "test_move_message_with_aws_key"
+
+        self.args_fifo.append(f"--group-id={message_group_id}")
         mock_get_pass.side_effect = [self.access_key, self.secret_key] * 2
 
-        self.add_message(self.queue_a_fifo_url)
+        self.add_message(self.queue_a_fifo_url, message_group_id=message_group_id)
 
         result = main(self.args_fifo)
 
@@ -85,10 +89,16 @@ class MoveMessagesFIFOTestCase(BaseTestCase):
 
     @patch("phoenix_letter.common.credentials.getpass")
     def test_move_message_fifo_without_message_attributes(self, mock_get_pass):
-        self.args_fifo.append("--group-id=ABC")
+        message_group_id = "test_move_message_fifo_without_message_attributes"
+
+        self.args_fifo.append(f"--group-id={message_group_id}")
         mock_get_pass.side_effect = [self.access_key, self.secret_key] * 2
 
-        self.add_message(self.queue_a_fifo_url, with_message_attributes=False)
+        self.add_message(
+            self.queue_a_fifo_url,
+            with_message_attributes=False,
+            message_group_id=message_group_id,
+        )
 
         result = main(self.args_fifo)
 

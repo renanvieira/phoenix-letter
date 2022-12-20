@@ -87,12 +87,16 @@ class BaseTestCase(TestCase):
         return args_fifo
 
     def setUpFifoQueues(self):
-        self.sqs.create_queue(QueueName="queue_a.fifo")
+        self.sqs.create_queue(
+            QueueName="queue_a.fifo", Attributes=dict(FifoQueue="true")
+        )
         self.queue_a_fifo_url = self.sqs.get_queue_url(QueueName="queue_a.fifo")[
             "QueueUrl"
         ]
 
-        self.sqs.create_queue(QueueName="queue_b.fifo")
+        self.sqs.create_queue(
+            QueueName="queue_b.fifo", Attributes=dict(FifoQueue="true")
+        )
         self.queue_b_fifo_url = self.sqs.get_queue_url(QueueName="queue_b.fifo")[
             "QueueUrl"
         ]
@@ -107,7 +111,7 @@ class BaseTestCase(TestCase):
             ]
         )
 
-    def _create_message(self, with_message_attributes=True):
+    def _create_message(self, with_message_attributes=True, message_group_id=None):
         message = dict()
         message["Body"] = json.dumps(dict(test="This is a test"))
 
@@ -122,20 +126,33 @@ class BaseTestCase(TestCase):
 
             message["MessageAttributes"] = message_attr
 
+        if message_group_id:
+            message["MessageGroupId"] = str(message_group_id)
+
         return message
 
-    def add_message(self, queue_url, with_message_attributes=True):
-        message = self._create_message(with_message_attributes=with_message_attributes)
+    def add_message(
+        self, queue_url, with_message_attributes=True, message_group_id=None
+    ):
+        message = self._create_message(
+            with_message_attributes=with_message_attributes,
+            message_group_id=message_group_id,
+        )
 
         attributes = (
             message["MessageAttributes"] if "MessageAttributes" in message else {}
         )
 
-        self.sqs.send_message(
+        send_message_params = dict(
             QueueUrl=queue_url,
             MessageBody=message["Body"],
             MessageAttributes=attributes,
         )
+
+        if "MessageGroupId" in message:
+            send_message_params["MessageGroupId"] = message["MessageGroupId"]
+
+        self.sqs.send_message(**send_message_params)
 
     def get_number_of_message(self, queue_url):
         attributes = self.sqs.get_queue_attributes(
