@@ -59,8 +59,9 @@ def parse_arguments(args):
         default=10,
         type=int,
         choices=range(1, 11),
-        help="Max number of messages to received from the source queue per request (this will be pass "
-        "in the MaxNumberOfMessages param). Default: 10 (AWS API max limit)",
+        help="Max number of messages to received from the source queue per request "
+             "(this will be pass in the MaxNumberOfMessages param). Default: 10 "
+             "(AWS API max limit)",
         metavar="N",
     )
 
@@ -74,15 +75,13 @@ def parse_arguments(args):
     parser.add_argument(
         "--group-id",
         dest="fifo_group_id",
-        help="Value for the MessageGroupId (used in FIFO queues). Required if '--fifo' argument is passed. Default: NULL. ",
+        help="Override the MessageGroupId (used in FIFO queues). "
+             "Only used if '--fifo' argument is passed. Default: NULL.",
         type=str,
         default=None,
         metavar="MESSAGE_GROUP_ID",
     )
 
     parsed_args = parser.parse_args(args)
-
-    if parsed_args.is_fifo is True and parsed_args.fifo_group_id is None:
-        parser.error("--fifo requires the argument --group-id.")
 
     return parsed_args
