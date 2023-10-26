@@ -82,6 +82,12 @@ def main(args=None):
             if "MessageAttributes" in message:
                 message_params["MessageAttributes"] = message["MessageAttributes"]
 
+            if args.message_attributes_values:
+                if not "MessageAttributes" in message_params:
+                    message_params["MessageAttributes"] = {}
+                for k, v in args.message_attributes_values.items():
+                    message_params["MessageAttributes"][k] = v
+
             if args.is_fifo:
                 message_params["MessageGroupId"] = args.fifo_group_id
 

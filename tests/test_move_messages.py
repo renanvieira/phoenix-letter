@@ -98,6 +98,41 @@ class MoveMessagesTestCase(BaseTestCase):
 
         first_message = dst_message["Messages"][0]
         self.assertEqual(first_message["Body"], json.dumps(dict(test="This is a test")))
-        self.assertNotIn("MessagAttributes", dst_message)
+        self.assertNotIn("MessageAttributes", dst_message)
+
+        mock_get_pass.reset_mock()
+
+    def test_move_message_with_custom_message_attributes(self, mock_get_pass):
+        self.args.append("--message-attributes-values")
+        self.args.append("Attribute1=Value%String")
+        self.args.append("Attribute2=2%Number")
+
+        mock_get_pass.side_effect = [self.access_key, self.secret_key] * 2
+
+        self.add_message(self.queue_a_url, with_message_attributes=False)
+
+        result = main(self.args)
+
+        self.assertEqual(result, ReasonStopEnum.EMPTY_RECEIVED)
+
+        self.assertEqual(mock_get_pass.call_count, 2)
+
+        dst_message = self.sqs.receive_message(
+            QueueUrl=self.queue_b_url,
+            MessageAttributeNames=["All"],
+            AttributeNames=["All"],
+            MaxNumberOfMessages=10,
+        )
+
+        self.assertIsNotNone(dst_message)
+        self.assertIn("Messages", dst_message)
+        self.assertTrue(len(dst_message["Messages"]) == 1)
+
+        first_message = dst_message["Messages"][0]
+        self.assertEqual(first_message["Body"], json.dumps(dict(test="This is a test")))
+        self.assertDictEqual(
+            first_message["MessageAttributes"],
+            { "Attribute1": { "DataType": "String", "StringValue": "Value" }, "Attribute2": { "DataType": "Number", "StringValue": "2" } }
+        )
 
         mock_get_pass.reset_mock()

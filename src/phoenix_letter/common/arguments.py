@@ -1,5 +1,17 @@
-from argparse import ArgumentParser
+from argparse import Action, ArgumentParser
 from json.encoder import py_encode_basestring
+
+
+class parse_key_value_pairs(Action):
+    def __call__(self, parser, namespace, values, option_string=None):
+        setattr(namespace, self.dest, dict())
+        for kv in values:
+            k, v = kv.split("=")
+            value, val_type = v.split("%")
+            getattr(namespace, self.dest)[k] = {
+                "DataType": val_type,
+                "StringValue": value,
+            }
 
 
 def parse_arguments(args):
@@ -78,6 +90,15 @@ def parse_arguments(args):
         type=str,
         default=None,
         metavar="MESSAGE_GROUP_ID",
+    )
+
+    parser.add_argument(
+        "--message-attributes-values",
+        metavar="key=value%type",
+        dest="message_attributes_values",
+        nargs='*',
+        help="Set a number of key-value pairs to be used to fill the MessageAttributes.",
+        action=parse_key_value_pairs,
     )
 
     parsed_args = parser.parse_args(args)
